@@ -93,3 +93,46 @@ export async function addWorkouts(workouts: WorkoutInsert[]) {
 
   revalidatePath('/')
 }
+
+/**
+ * Toggles gym attendance for a specific date.
+ *
+ * @param date - The date string in YYYY-MM-DD format
+ *
+ * How it works:
+ * - If no visit exists for that date → add one (mark as attended)
+ * - If a visit already exists → delete it (mark as not attended)
+ *
+ * This is called a "toggle" pattern - one action that switches between two states.
+ */
+export async function toggleGymVisit(date: string) {
+  // First, check if a visit already exists for this date
+  const { data: existing } = await supabase
+    .from('gym_visits')
+    .select('id')
+    .eq('visited_date', date)
+    .single()
+
+  if (existing) {
+    // Visit exists → delete it (uncheck)
+    const { error } = await supabase
+      .from('gym_visits')
+      .delete()
+      .eq('id', existing.id)
+
+    if (error) {
+      throw new Error(error.message)
+    }
+  } else {
+    // No visit → create one (check)
+    const { error } = await supabase
+      .from('gym_visits')
+      .insert({ visited_date: date })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+  }
+
+  revalidatePath('/')
+}

@@ -21,8 +21,9 @@
 
 import { WorkoutForm } from '@/components/workout-form'
 import { WorkoutList } from '@/components/workout-list'
+import { WeeklyAttendance } from '@/components/weekly-attendance'
 import { AIChat } from '@/components/ai-chat'
-import { getWorkouts } from '@/lib/queries'
+import { getWorkouts, getWeeklyGymVisits } from '@/lib/queries'
 
 /**
  * Force dynamic rendering for this page
@@ -43,8 +44,9 @@ export const dynamic = 'force-dynamic'
  * directly - no useEffect or loading states needed!
  */
 export default async function Home() {
-  // Fetch workouts directly - this runs on the server before sending HTML
+  // Fetch data directly - this runs on the server before sending HTML
   const workouts = await getWorkouts()
+  const gymVisits = await getWeeklyGymVisits()
 
   return (
     <main className="min-h-screen bg-background">
@@ -62,6 +64,8 @@ export default async function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left column: Workout logging tools */}
           <div className="space-y-8">
+            {/* Weekly attendance grid - click days to mark gym visits */}
+            <WeeklyAttendance initialVisits={gymVisits} />
             {/* Form for adding new workouts */}
             <WorkoutForm />
             {/* Table showing workout history - receives data as props */}

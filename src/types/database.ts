@@ -19,6 +19,26 @@
 export type Database = {
   public: {
     Tables: {
+      gym_visits: {
+        /**
+         * Row type - a single gym visit record
+         */
+        Row: {
+          id: string
+          visited_date: string // Date in YYYY-MM-DD format
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          visited_date: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          visited_date?: string
+          created_at?: string
+        }
+      }
       workouts: {
         /**
          * Row type - what you get when you SELECT from the table
@@ -75,3 +95,5 @@ export type Database = {
 export type Workout = Database['public']['Tables']['workouts']['Row']
 export type WorkoutInsert = Database['public']['Tables']['workouts']['Insert']
 export type WorkoutUpdate = Database['public']['Tables']['workouts']['Update']
+
+export type GymVisit = Database['public']['Tables']['gym_visits']['Row']

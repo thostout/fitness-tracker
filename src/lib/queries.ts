@@ -13,7 +13,7 @@
  */
 
 import { supabase } from './supabase'
-import type { Workout } from '@/types'
+import type { Workout, GymVisit } from '@/types'
 
 /**
  * Fetches all workouts from the database, sorted by most recent first.
@@ -66,4 +66,41 @@ export async function getRecentWorkouts(days: number = 14): Promise<Workout[]> {
   }
 
   return data
+}
+
+/**
+ * Fetches gym visits for the current week.
+ *
+ * @returns Array of GymVisit objects for this week
+ *
+ * Why fetch the whole week?
+ * - We display a 7-day grid (Mon-Sun)
+ * - Need to know which days are already checked
+ */
+export async function getWeeklyGymVisits(): Promise<GymVisit[]> {
+  // Get the start of the current week (Monday)
+  const today = new Date()
+  const dayOfWeek = today.getDay()
+  // Adjust so Monday = 0, Sunday = 6
+  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+
+  const monday = new Date(today)
+  monday.setDate(today.getDate() - daysFromMonday)
+  monday.setHours(0, 0, 0, 0)
+
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
+  sunday.setHours(23, 59, 59, 999)
+
+  const { data, error } = await supabase
+    .from('gym_visits')
+    .select('*')
+    .gte('visited_date', monday.toISOString().split('T')[0])
+    .lte('visited_date', sunday.toISOString().split('T')[0])
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data || []
 }
