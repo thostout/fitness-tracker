@@ -53,7 +53,7 @@ export default async function Home() {
       {/* Container with responsive padding */}
       <div className="container mx-auto py-8 px-4">
         {/* Page title */}
-        <h1 className="text-3xl font-bold mb-8">Workout Tracker</h1>
+        <h1 className="text-3xl font-bold mb-6">Workout Tracker</h1>
 
         {/*
          * Responsive grid layout:
